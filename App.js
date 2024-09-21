@@ -9,6 +9,9 @@ import {
 import OnBoardingScreen from "./screens/OnBoardingScreen";
 import { useFonts } from "expo-font";
 import LoginScreen from "./screens/auth/LoginScreen";
+import SignUp from "./screens/auth/SignUp";
+import ForgotPassword from "./screens/auth/ForgotPassword";
+import HomeScreen from "./screens/HomeScreen";
 
 const Stack = createStackNavigator();
 
@@ -32,6 +35,9 @@ export default function App() {
       >
         <Stack.Screen name="OnBoarding" component={OnBoardingScreen} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="SignUp" component={SignUp} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
