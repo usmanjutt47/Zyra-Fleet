@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   ScrollView,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,6 +15,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("window");
 
@@ -23,8 +25,55 @@ const responsiveWidth = (size) => (size * height) / 812;
 const responsiveHeight = (size) => (size * width) / 375;
 
 export default function LoginScreen() {
-  const [isTicked, setIsTicked] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigation = useNavigation();
+  const [isTicked, setIsTicked] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email) {
+      Alert.alert("Error", "Email is required");
+      return;
+    }
+    if (!password) {
+      Alert.alert("Error", "Password is required");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://192.168.100.6:5000/api/users/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        try {
+          await AsyncStorage.setItem("userId", data.user._id);
+          const savedUserId = await AsyncStorage.getItem("userId");
+          console.log("Saved User ID:", savedUserId);
+
+          Alert.alert("Login Successful", data.message);
+          navigation.navigate("Home");
+        } catch (storageError) {
+          Alert.alert("Error", "Could not save user data locally");
+        }
+      } else {
+        Alert.alert("Login Failed", data.message || "Something went wrong");
+      }
+    } catch (networkError) {
+      console.log("Network Error:", networkError);
+      Alert.alert("Error", "Network error, please try again");
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <ScrollView
@@ -44,7 +93,11 @@ export default function LoginScreen() {
           </Text>
 
           <View>
-            <Text style={{ marginTop: responsiveHeight(40) }}>Email</Text>
+            <Text
+              style={{ marginTop: responsiveHeight(40), fontFamily: "medium" }}
+            >
+              Email
+            </Text>
             <View style={styles.inputContainer}>
               <Pressable style={styles.iconContainer}>
                 <Image
@@ -57,12 +110,19 @@ export default function LoginScreen() {
                 style={styles.input}
                 keyboardType="email-address"
                 placeholderTextColor={"#7C7C7C"}
+                cursorColor={"#92499C"}
+                value={email}
+                onChangeText={setEmail}
               />
             </View>
           </View>
 
           <View>
-            <Text style={{ marginTop: responsiveHeight(20) }}>Password</Text>
+            <Text
+              style={{ marginTop: responsiveHeight(20), fontFamily: "medium" }}
+            >
+              Password
+            </Text>
             <View style={styles.inputContainer}>
               <Pressable style={styles.iconContainer}>
                 <Image
@@ -75,6 +135,9 @@ export default function LoginScreen() {
                 style={styles.input}
                 placeholderTextColor={"#7C7C7C"}
                 secureTextEntry={true}
+                cursorColor={"#92499C"}
+                value={password}
+                onChangeText={setPassword}
               />
             </View>
           </View>
@@ -99,10 +162,7 @@ export default function LoginScreen() {
               <Text style={styles.forgetText}>Forgot Password?</Text>
             </Pressable>
           </View>
-          <Pressable
-            style={styles.buttonContainer}
-            onPress={() => navigation.navigate("Home")}
-          >
+          <Pressable style={styles.buttonContainer} onPress={handleLogin}>
             <Text style={styles.buttonText}>Sign in</Text>
           </Pressable>
           <Pressable style={styles.textOuterContainer}>
@@ -110,10 +170,7 @@ export default function LoginScreen() {
               <Pressable>
                 <Text>Do not have an account? </Text>
               </Pressable>
-              <Pressable
-                style={styles.textContainer}
-                onPress={() => navigation.navigate("SignUp")}
-              >
+              <Pressable style={styles.textContainer} onPress={handleLogin}>
                 <Text style={styles.signUpText}>Sign up</Text>
               </Pressable>
             </View>
