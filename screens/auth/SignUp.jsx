@@ -42,7 +42,11 @@ export default function SignUp() {
           <Text style={styles.desc}>Please Setup Your Account</Text>
 
           <View>
-            <Text style={{ marginTop: responsiveHeight(40) }}>Name</Text>
+            <Text
+              style={{ marginTop: responsiveHeight(40), fontFamily: "medium" }}
+            >
+              Name
+            </Text>
             <View style={styles.inputContainer}>
               <Pressable style={styles.iconContainer}>
                 <Image
@@ -53,14 +57,19 @@ export default function SignUp() {
               <TextInput
                 placeholder="Enter Name"
                 style={styles.input}
-                keyboardType="email-address"
+                keyboardType="name-phone-pad"
                 placeholderTextColor={"#7C7C7C"}
+                cursorColor={'#92499C'}
               />
             </View>
           </View>
 
           <View>
-            <Text style={{ marginTop: responsiveHeight(20) }}>Email</Text>
+            <Text
+              style={{ marginTop: responsiveHeight(20), fontFamily: "medium" }}
+            >
+              Email
+            </Text>
             <View style={styles.inputContainer}>
               <Pressable style={styles.iconContainer}>
                 <Image
@@ -73,12 +82,17 @@ export default function SignUp() {
                 style={styles.input}
                 keyboardType="email-address"
                 placeholderTextColor={"#7C7C7C"}
+                cursorColor={'#92499C'}
               />
             </View>
           </View>
 
           <View>
-            <Text style={{ marginTop: responsiveHeight(20) }}>Phone</Text>
+            <Text
+              style={{ marginTop: responsiveHeight(20), fontFamily: "medium" }}
+            >
+              Phone
+            </Text>
             <View style={styles.inputContainer}>
               <Pressable style={styles.iconContainer}>
                 <Image
@@ -90,13 +104,18 @@ export default function SignUp() {
                 placeholder="Enter Phone"
                 style={styles.input}
                 keyboardType="number-pad"
+                cursorColor={'#92499C'}
                 placeholderTextColor={"#7C7C7C"}
               />
             </View>
           </View>
 
           <View>
-            <Text style={{ marginTop: responsiveHeight(20) }}>Password</Text>
+            <Text
+              style={{ marginTop: responsiveHeight(20), fontFamily: "medium" }}
+            >
+              Password
+            </Text>
             <View style={styles.inputContainer}>
               <Pressable style={styles.iconContainer}>
                 <Image
@@ -108,12 +127,15 @@ export default function SignUp() {
                 placeholder="Enter Password"
                 style={styles.input}
                 placeholderTextColor={"#7C7C7C"}
+                cursorColor={'#92499C'}
                 secureTextEntry={true}
               />
             </View>
           </View>
           <View>
-            <Text style={{ marginTop: responsiveHeight(20) }}>
+            <Text
+              style={{ marginTop: responsiveHeight(20), fontFamily: "medium" }}
+            >
               Confirm Password
             </Text>
             <View style={styles.inputContainer}>
@@ -127,6 +149,7 @@ export default function SignUp() {
                 placeholder="Enter your Password"
                 style={styles.input}
                 placeholderTextColor={"#7C7C7C"}
+                cursorColor={'#92499C'}
                 secureTextEntry={true}
               />
             </View>
@@ -145,7 +168,7 @@ export default function SignUp() {
               </Pressable>
               <Pressable
                 style={styles.textContainer}
-                onPress={() => navigation.navigate("SignUp")}
+                onPress={() => navigation.navigate("Home")}
               >
                 <Text style={styles.signUpText}>Sign up</Text>
               </Pressable>
