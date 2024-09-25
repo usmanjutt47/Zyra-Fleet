@@ -9,10 +9,11 @@ import {
   Image,
   TextInput,
 } from "react-native";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
 
 const { width, height } = Dimensions.get("window");
 
@@ -24,6 +25,8 @@ const responsiveHeight = (size) => (size * width) / 375;
 export default function ForgotPassword() {
   const navigation = useNavigation();
   const scaleValue = useRef(new Animated.Value(1)).current;
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false); // Step 1: Add loading state
 
   useEffect(() => {
     const scaleAnimation = Animated.loop(
@@ -46,6 +49,64 @@ export default function ForgotPassword() {
 
     return () => scaleAnimation.stop();
   }, [scaleValue]);
+
+  // Function to send OTP
+  const sendOTP = async () => {
+    if (!email) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Email is required",
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch(
+        `http://192.168.100.175:5000/api/users/send-otp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Toast.show({
+          type: "success",
+          text1: "OTP Sent",
+          text2: data.message,
+        });
+
+        setTimeout(() => {
+          navigation.navigate("OTPScreen", { email });
+        }, 1000);
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: data.message,
+        });
+      }
+      setEmail("");
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      Toast.show({
+        type: "error",
+        text1: "Network Error",
+        text2: "Please try again later.",
+      });
+    } finally {
+      setLoading(false); // Step 3: Reset loading state
+    }
+  };
+
   return (
     <SafeAreaView style={{ backgroundColor: "#fff" }}>
       <View style={styles.innerContainer}>
@@ -76,6 +137,7 @@ export default function ForgotPassword() {
             />
           </Pressable>
         </View>
+
         <View>
           <Text
             style={{ marginTop: responsiveHeight(40), fontFamily: "medium" }}
@@ -95,21 +157,30 @@ export default function ForgotPassword() {
               keyboardType="email-address"
               placeholderTextColor={"#7C7C7C"}
               cursorColor={"#92499C"}
+              value={email}
+              onChangeText={setEmail}
             />
           </View>
         </View>
+
         <Pressable
           style={styles.buttonContainer}
-          onPress={() => navigation.navigate("ChangePassword")}
+          onPress={sendOTP}
+          disabled={loading}
         >
-          <Text style={styles.buttonText}>Next</Text>
+          <Text style={styles.buttonText}>
+            {loading ? "Loading..." : "Next"}
+          </Text>
         </Pressable>
+
+        <Toast />
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  // Your existing styles
   container: {
     flex: 1,
     backgroundColor: "#fff",
