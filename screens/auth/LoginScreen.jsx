@@ -41,16 +41,13 @@ export default function LoginScreen() {
     }
 
     try {
-      const response = await fetch(
-        `http://192.168.100.6:5000/api/users/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
+      const response = await fetch(`http://192.168.10.9:5000/api/users/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
       const data = await response.json();
 
@@ -170,7 +167,10 @@ export default function LoginScreen() {
               <Pressable>
                 <Text>Do not have an account? </Text>
               </Pressable>
-              <Pressable style={styles.textContainer} onPress={handleLogin}>
+              <Pressable
+                style={styles.textContainer}
+                onPress={() => navigation.navigate("SignUp")}
+              >
                 <Text style={styles.signUpText}>Sign up</Text>
               </Pressable>
             </View>
@@ -359,6 +359,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
     color: "#92499C",
     fontFamily: "regular",
+    fontWeight: "bold",
   },
   savePasswword: {
     fontSize: responsiveFontSize(12),
