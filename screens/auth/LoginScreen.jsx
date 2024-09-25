@@ -41,13 +41,16 @@ export default function LoginScreen() {
     }
 
     try {
-      const response = await fetch(`http://192.168.10.9:5000/api/users/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        `http://192.168.100.175:5000/api/users/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const data = await response.json();
 
@@ -59,6 +62,8 @@ export default function LoginScreen() {
 
           Alert.alert("Login Successful", data.message);
           navigation.navigate("Home");
+          setEmail("");
+          setPassword("");
         } catch (storageError) {
           Alert.alert("Error", "Could not save user data locally");
         }
