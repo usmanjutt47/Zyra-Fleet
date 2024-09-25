@@ -8,12 +8,14 @@ import {
   Easing,
   Image,
   TextInput,
+  Alert,
 } from "react-native";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useNavigation } from "@react-navigation/native";
-
+import { useNavigation, useRoute } from "@react-navigation/native";
+import Toast from "react-native-toast-message";
+import axios from "axios"; // Ensure you import axios
 const { width, height } = Dimensions.get("window");
 
 const responsiveFontSize = (size) => (size * width) / 375;
@@ -24,6 +26,12 @@ const responsiveHeight = (size) => (size * width) / 375;
 export default function ChangePassword() {
   const navigation = useNavigation();
   const scaleValue = useRef(new Animated.Value(1)).current;
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const route = useRoute();
+  const { email } = route.params; // Email ko params se le rahe hain
 
   useEffect(() => {
     const scaleAnimation = Animated.loop(
@@ -46,6 +54,39 @@ export default function ChangePassword() {
 
     return () => scaleAnimation.stop();
   }, [scaleValue]);
+
+  const handleChangePassword = async () => {
+    if (!newPassword || !confirmPassword) {
+      Alert.alert("Error", "New password and confirm password are required");
+      console.error("New password and confirm password are required");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      console.error("Passwords do not match");
+      return;
+    }
+
+    setLoading(true); // Loading state ko true karen
+    try {
+      const response = await axios.post(
+        "http://192.168.100.175:5000/api/users/change-password",
+        { email, newPassword, confirmPassword } // Email ko yahan add kiya gaya
+      );
+      Alert.alert("Success", response.data.message);
+      navigation.navigate("LoginScreen"); // Yahan pe navigation kar rahe hain
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        error.response?.data?.message || "Something went wrong"
+      );
+      console.error("API error:", error); // Console mein error log karte hain
+    } finally {
+      setLoading(false); // Loading state ko false karen
+    }
+  };
+
   return (
     <SafeAreaView style={{ backgroundColor: "#fff" }}>
       <View style={styles.innerContainer}>
@@ -74,66 +115,85 @@ export default function ChangePassword() {
             />
           </Pressable>
         </View>
+
         <View>
           <Text
-            style={{ marginTop: responsiveHeight(40), fontFamily: "medium" }}
+            style={{ marginTop: responsiveHeight(20), fontFamily: "medium" }}
           >
             New Password
           </Text>
           <View style={styles.inputContainer}>
             <Pressable style={styles.iconContainer}>
               <Image
-                source={require("../assets/icons/email.png")}
+                source={require("../assets/icons/password.png")}
                 style={styles.inputIcon}
               />
             </Pressable>
             <TextInput
               placeholder="Enter new password"
               style={styles.input}
-              keyboardType="email-address"
               placeholderTextColor={"#7C7C7C"}
+              secureTextEntry={!showPassword}
               cursorColor={"#92499C"}
+              onChangeText={setNewPassword} // Yahan par value ko handle karne ke liye
             />
+            <Pressable onPress={() => setShowPassword(!showPassword)}>
+              <Ionicons
+                name={showPassword ? "eye-off-outline" : "eye-outline"}
+                size={20}
+                color="#7C7C7C"
+                style={{ marginRight: responsiveHeight(10) }}
+              />
+            </Pressable>
           </View>
         </View>
         <View>
           <Text
-            style={{ marginTop: responsiveHeight(10), fontFamily: "medium" }}
+            style={{ marginTop: responsiveHeight(20), fontFamily: "medium" }}
           >
             Confirm Password
           </Text>
           <View style={styles.inputContainer}>
             <Pressable style={styles.iconContainer}>
               <Image
-                source={require("../assets/icons/email.png")}
+                source={require("../assets/icons/password.png")}
                 style={styles.inputIcon}
               />
             </Pressable>
             <TextInput
               placeholder="Confirm your password"
               style={styles.input}
-              keyboardType="email-address"
               placeholderTextColor={"#7C7C7C"}
+              secureTextEntry={!showPassword}
               cursorColor={"#92499C"}
+              onChangeText={setConfirmPassword} // Yahan par value ko handle karne ke liye
             />
+            <Pressable onPress={() => setShowPassword(!showPassword)}>
+              <Ionicons
+                name={showPassword ? "eye-off-outline" : "eye-outline"}
+                size={20}
+                color="#7C7C7C"
+                style={{ marginRight: responsiveHeight(10) }}
+              />
+            </Pressable>
           </View>
         </View>
         <Pressable
           style={styles.buttonContainer}
-          onPress={() => navigation.navigate("ChangePassword")}
+          onPress={handleChangePassword} // API call karne ke liye
+          disabled={loading}
         >
-          <Text style={styles.buttonText}>Next</Text>
+          <Text style={styles.buttonText}>
+            {loading ? "Loading..." : "Next"}
+          </Text>
         </Pressable>
+        <Toast />
       </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
   innerContainer: {
     height: "100%",
     width: "90%",
@@ -189,20 +249,6 @@ const styles = StyleSheet.create({
     height: responsiveHeight(48),
     marginTop: responsiveHeight(5),
   },
-  iconContainer: {
-    height: responsiveHeight(27),
-    width: responsiveWidth(27),
-    borderRadius: 30,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 10,
-  },
-  inputIcon: {
-    width: 15,
-    height: 15,
-    resizeMode: "contain",
-  },
   input: {
     fontSize: responsiveFontSize(12),
     flex: 1,
@@ -222,5 +268,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "regular",
     color: "#ffff",
+  },
+  iconContainer: {
+    height: responsiveHeight(27),
+    width: responsiveWidth(27),
+    borderRadius: 30,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 10,
+  },
+  inputIcon: {
+    width: 15,
+    height: 15,
+    resizeMode: "contain",
   },
 });
