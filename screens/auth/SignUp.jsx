@@ -7,6 +7,7 @@ import {
   Image,
   TextInput,
   ScrollView,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,6 +15,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width, height } = Dimensions.get("window");
 
@@ -25,6 +27,89 @@ const responsiveHeight = (size) => (size * width) / 375;
 export default function SignUp() {
   const [isTicked, setIsTicked] = useState(false);
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
+
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const handleChange = (field, value) => {
+    setUser({ ...user, [field]: value });
+  };
+  const handleSubmit = async () => {
+    console.log("Submitting form...");
+    setLoading(true);
+    if (!user.name) {
+      Alert.alert("Error", "Name is required!");
+      setLoading(false);
+      return;
+    }
+    if (!user.email) {
+      Alert.alert("Error", "Email is required!");
+      setLoading(false);
+      return;
+    }
+    if (!user.phone) {
+      Alert.alert("Error", "Phone is required!");
+      setLoading(false);
+      return;
+    }
+
+    if (!user.password) {
+      Alert.alert("Error", "Password is required!");
+      setLoading(false);
+      return;
+    }
+    if (!user.confirmPassword) {
+      Alert.alert("Error", "Confirm Password is required!");
+      setLoading(false);
+      return;
+    }
+
+    if (user.password !== user.confirmPassword) {
+      Alert.alert("Error", "Passwords do not match!");
+      return;
+    }
+    try {
+      const response = await fetch(
+        "http://192.168.10.9:5000/api/users/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(user),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUser({
+          name: "",
+          email: "",
+          phone: "",
+          password: "",
+          confirmPassword: "",
+        });
+        Alert.alert("Success", "User registered successfully!");
+
+        await AsyncStorage.setItem("name", user.name);
+        navigation.navigate("LoginScreen", { userName: user.name });
+      } else {
+        Alert.alert("Error", data.message || "Registration failed.");
+        setLoading(false);
+        console.log("Error from backend:", data);
+      }
+    } catch (error) {
+      Alert.alert("Error", error.message || "Something went wrong!");
+      console.log("Catch Error Details:", error);
+      setLoading(false);
+    }
+  };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <ScrollView
@@ -59,7 +144,8 @@ export default function SignUp() {
                 style={styles.input}
                 keyboardType="name-phone-pad"
                 placeholderTextColor={"#7C7C7C"}
-                cursorColor={'#92499C'}
+                cursorColor={"#92499C"}
+                onChangeText={(value) => handleChange("name", value)}
               />
             </View>
           </View>
@@ -82,7 +168,8 @@ export default function SignUp() {
                 style={styles.input}
                 keyboardType="email-address"
                 placeholderTextColor={"#7C7C7C"}
-                cursorColor={'#92499C'}
+                cursorColor={"#92499C"}
+                onChangeText={(value) => handleChange("email", value)}
               />
             </View>
           </View>
@@ -104,8 +191,9 @@ export default function SignUp() {
                 placeholder="Enter Phone"
                 style={styles.input}
                 keyboardType="number-pad"
-                cursorColor={'#92499C'}
+                cursorColor={"#92499C"}
                 placeholderTextColor={"#7C7C7C"}
+                onChangeText={(value) => handleChange("phone", value)}
               />
             </View>
           </View>
@@ -127,8 +215,9 @@ export default function SignUp() {
                 placeholder="Enter Password"
                 style={styles.input}
                 placeholderTextColor={"#7C7C7C"}
-                cursorColor={'#92499C'}
+                cursorColor={"#92499C"}
                 secureTextEntry={true}
+                onChangeText={(value) => handleChange("password", value)}
               />
             </View>
           </View>
@@ -149,17 +238,17 @@ export default function SignUp() {
                 placeholder="Enter your Password"
                 style={styles.input}
                 placeholderTextColor={"#7C7C7C"}
-                cursorColor={'#92499C'}
+                cursorColor={"#92499C"}
                 secureTextEntry={true}
+                onChangeText={(value) => handleChange("confirmPassword", value)}
               />
             </View>
           </View>
 
-          <Pressable
-            style={styles.buttonContainer}
-            onPress={() => navigation.navigate("Home")}
-          >
-            <Text style={styles.buttonText}>Sign up</Text>
+          <Pressable style={styles.buttonContainer} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>
+              {loading ? "Loading..." : "Sign up"}
+            </Text>
           </Pressable>
           <Pressable style={styles.textOuterContainer}>
             <View style={styles.textMainContainer}>
