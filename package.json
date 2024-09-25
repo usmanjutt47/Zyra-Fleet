@@ -24,6 +24,7 @@
     "react-native-gesture-handler": "^2.19.0",
     "react-native-safe-area-context": "^4.11.0",
     "react-native-screens": "^3.34.0",
+    "react-native-toast-message": "^2.2.1",
     "reactjs-alert": "^2.2.0"
   },
   "devDependencies": {
