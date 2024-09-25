@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 const truckEntrySchema = new mongoose.Schema(
   {
     userId: {
-      type: mongoose.Schema.Types.ObjectId, // userId ko ObjectId ki form me store karna
-      ref: "User", // Ye reference hai User model ka
-      required: true, // UserId ko required kar dena
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     name: {
       type: String,
