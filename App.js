@@ -13,10 +13,10 @@ import SignUp from "./screens/auth/SignUp";
 import ForgotPassword from "./screens/auth/ForgotPassword";
 import HomeScreen from "./screens/HomeScreen";
 import YourSubmisions from "./screens/YourSubmisions";
-import SuccessToast from "./screens/SuccessToast";
 import ContactUs from "./screens/ContactUs";
 import TeamsAndConditions from "./screens/TeamsAndConditions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ChangePassword from "./screens/ChangePassword";
 
 const Stack = createStackNavigator();
 
@@ -58,7 +58,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={initialRoute}
+        initialRouteName="OnBoarding"
         screenOptions={{
           ...TransitionPresets.SlideFromRightIOS,
           headerShown: false,
@@ -70,8 +70,8 @@ export default function App() {
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="YourSubmisions" component={YourSubmisions} />
-        <Stack.Screen name="SuccessToast" component={SuccessToast} />
         <Stack.Screen name="ContactUs" component={ContactUs} />
+        <Stack.Screen name="ChangePassword" component={ChangePassword} />
         <Stack.Screen
           name="TeamsAndConditions"
           component={TeamsAndConditions}
