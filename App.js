@@ -17,6 +17,7 @@ import ContactUs from "./screens/ContactUs";
 import TeamsAndConditions from "./screens/TeamsAndConditions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ChangePassword from "./screens/ChangePassword";
+import OTPScreen from "./screens/OTPScreen";
 
 const Stack = createStackNavigator();
 
@@ -30,14 +31,13 @@ export default function App() {
   });
 
   useEffect(() => {
-    // AsyncStorage se userId ko check karo
     const checkUserId = async () => {
       try {
         const userId = await AsyncStorage.getItem("userId");
         if (userId) {
-          setInitialRoute("Home"); // Agar userId mil jaye to Home show karo
+          setInitialRoute("Home");
         } else {
-          setInitialRoute("OnBoarding"); // Nahi to OnBoarding show karo
+          setInitialRoute("OnBoarding");
         }
       } catch (error) {
         console.log("Error checking userId from AsyncStorage:", error);
@@ -58,7 +58,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="OnBoarding"
+        initialRouteName={initialRoute}
         screenOptions={{
           ...TransitionPresets.SlideFromRightIOS,
           headerShown: false,
@@ -72,6 +72,7 @@ export default function App() {
         <Stack.Screen name="YourSubmisions" component={YourSubmisions} />
         <Stack.Screen name="ContactUs" component={ContactUs} />
         <Stack.Screen name="ChangePassword" component={ChangePassword} />
+        <Stack.Screen name="OTPScreen" component={OTPScreen} />
         <Stack.Screen
           name="TeamsAndConditions"
           component={TeamsAndConditions}
