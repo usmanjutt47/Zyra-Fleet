@@ -136,7 +136,7 @@ export default function HomeScreen() {
 
     try {
       const response = await fetch(
-        "http://192.168.10.9:5000/api/users/truck-entry",
+        "http://192.168.10.5:5000/api/users/truck-entry",
         {
           method: "POST",
           headers: {
@@ -410,12 +410,19 @@ export default function HomeScreen() {
                   marginBottom: responsiveHeight(10),
                 }}
               >
-                <Text style={{ color: "#7C7C7C", fontFamily: "regular" }}>
-                  Contact us
-                </Text>
-                <Text style={{ color: "#7C7C7C", fontFamily: "regular" }}>
-                  Teams & Conditions
-                </Text>
+                <Pressable onPress={() => navigation.navigate("ContactUs")}>
+                  <Text style={{ color: "#7C7C7C", fontFamily: "regular" }}>
+                    Contact us
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  onPress={() => navigation.navigate("TeamsAndConditions")}
+                >
+                  <Text style={{ color: "#7C7C7C", fontFamily: "regular" }}>
+                    Teams & Conditions
+                  </Text>
+                </Pressable>
               </Pressable>
             </View>
           </ScrollView>
