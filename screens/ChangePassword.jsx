@@ -71,7 +71,7 @@ export default function ChangePassword() {
     setLoading(true); // Loading state ko true karen
     try {
       const response = await axios.post(
-        "http://192.168.100.175:5000/api/users/change-password",
+        "http://192.168.10.5:5000/api/users/change-password",
         { email, newPassword, confirmPassword } // Email ko yahan add kiya gaya
       );
       Alert.alert("Success", response.data.message);
