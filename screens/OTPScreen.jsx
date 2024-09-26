@@ -87,7 +87,7 @@ export default function OTPScreen() {
 
     try {
       const response = await fetch(
-        `http://192.168.100.175:5000/api/users/verify-otp`,
+        `http://192.168.10.5:5000/api/users/verify-otp`,
         {
           method: "POST",
           headers: {
