@@ -51,7 +51,7 @@ export default function YourSubmisions() {
       if (userId) {
         try {
           const response = await axios.get(
-            `http://192.168.100.175:5000/api/users/truck-entry/${userId}`
+            `http://192.168.10.5:5000/api/users/truck-entry/${userId}`
           );
           setSubmissions(response.data.data);
         } catch (error) {
