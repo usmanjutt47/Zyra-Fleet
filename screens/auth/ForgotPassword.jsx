@@ -65,7 +65,7 @@ export default function ForgotPassword() {
 
     try {
       const response = await fetch(
-        `http://192.168.100.175:5000/api/users/send-otp`,
+        `http://192.168.10.5:5000/api/users/send-otp`,
         {
           method: "POST",
           headers: {
